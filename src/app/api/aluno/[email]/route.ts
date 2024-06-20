@@ -11,28 +11,27 @@ interface UpdateAluno {
 // Edit Aluno
 export async function PUT(request:NextRequest) {
     const email = request.headers;
-    const {nome, senha} = request.body;
-
-    const nome = request.body.
-
-    const data: UpdateAluno = {};
-
-    if (nome !== undefined) {
-        data.nome = nome;
-    }
-    
-    if (senha !== undefined) {
-        data.senha = senha;
-    }
-
-    if (Object.keys(data).length === 0) {
-        return NextResponse.json({
-            message: "Nenhum item a ser atualizado.",
-            status: 400,
-        })
-    }
-
     try{
+        const req = await request.json();
+        
+        const data: UpdateAluno = {};
+        if(req) {
+            const {nome, senha} = req;
+            if (nome !== undefined) {
+                data.nome = nome;
+            }
+            
+            if (senha !== undefined) {
+                data.senha = senha;
+            }
+        }
+
+        if (Object.keys(data).length === 0) {
+            return NextResponse.json({
+                message: "Nenhum item a ser atualizado.",
+                status: 400,
+            })
+        }
 
         const update = await prisma.aluno.update({
             where: { email: email },
@@ -91,7 +90,7 @@ export async function DELETE(request:Request) {
             message: "Aluno deletado com sucesso.",
             status: 200,
         })
-        
+
     } catch (error) {
 
         return NextResponse.json({

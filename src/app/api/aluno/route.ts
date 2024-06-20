@@ -5,15 +5,22 @@ const prisma = PrismaClient();
 
 // Create Alunos
 export async function POST(request:Request) {
-    const nome = request.body.nome;
-    const { nome, email, senha } = request.body;
+
     try{
-        const create = await prisma.aluno.create({
-            data: {
-                nome: nome,
-                email: email,
-                senha: senha,
+
+        const data = await request.json();
+        let aluno;
+        if(data) {
+            const {nome, email, senha} = data;
+            aluno = {
+                nome,
+                email,
+                senha,
             }
+        }
+        
+        const create = await prisma.aluno.create({
+            data: aluno
         })
 
         return NextResponse.json({
