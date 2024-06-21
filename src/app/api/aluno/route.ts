@@ -1,22 +1,29 @@
 import { PrismaClient } from '@prisma/client'
 import { NextResponse } from 'next/server';
 
-const prisma = PrismaClient();
+const prisma = new PrismaClient();
 
 // Create Alunos
 export async function POST(request:Request) {
 
     try{
 
-        const data = await request.json();
+        const json = await request.json();
         let aluno;
-        if(data) {
-            const {nome, email, senha} = data;
+        if(json) {
+            const {nome, email, senha} = json;
             aluno = {
                 nome,
                 email,
                 senha,
             }
+        }
+
+        if( aluno?.nome === undefined || aluno.email === undefined || aluno.senha === undefined ){
+            return NextResponse.json({
+                message: "Erro ao criar aluno devido a falta de atributos.",
+                status: 400,
+            })
         }
         
         const create = await prisma.aluno.create({
@@ -31,7 +38,7 @@ export async function POST(request:Request) {
 
     } catch (error) {
         return NextResponse.json({
-            message: "Erro ao criar aluno",
+            message: "Erro ao editar aluno",
             body: error,
         })
     }
