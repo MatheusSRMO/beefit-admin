@@ -19,7 +19,7 @@ export async function PUT(request:NextApiRequest) {
                 status: 400,
             });
         }
-        
+
         const req = await request.body;
         
         const data: UpdateTreino = {};
@@ -38,7 +38,7 @@ export async function PUT(request:NextApiRequest) {
         }
 
         const update = await prisma.treino.update({
-            where: { id: id },
+            where: { id: parseInt(id, 10) },
             data: data,
         })
 
@@ -70,7 +70,7 @@ export async function GET(request:NextApiRequest) {
         }
 
         const treino = await prisma.treino.findUnique({
-            where: { id: id },
+            where: { id: parseInt(id, 10) },
         })
 
         return NextResponse.json({
@@ -89,30 +89,30 @@ export async function GET(request:NextApiRequest) {
 
 // Delete Treino
 export async function DELETE(request:NextApiRequest) {
-    const email = request.query;
+    const id = request.query;
     
     try {
 
-        if (typeof email !== 'string') {
+        if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Email inválido.",
+                message: "Id inválido.",
                 status: 400,
             });
         }
 
-        await prisma.aluno.delete({
-            where: { email: email },
+        await prisma.treino.delete({
+            where: { id: parseInt(id, 10) },
         })
 
         return NextResponse.json({
-            message: "Aluno deletado com sucesso.",
+            message: "Treino deletado com sucesso.",
             status: 200,
         })
 
     } catch (error) {
 
         return NextResponse.json({
-            message: "Erro ao deletar aluno",
+            message: "Erro ao deletar treino.",
             body: error,
         })
     }

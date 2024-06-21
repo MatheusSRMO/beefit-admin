@@ -12,12 +12,18 @@ export async function POST(request:NextApiRequest) {
     
     try{
         const aluno_id = request.query;
-        let id;
-        // if (aluno_id) id = parseInt(aluno_id, 10);
-
+        if (typeof aluno_id !== 'string') {
+            return NextResponse.json({
+                message: "Id de aluno inválido.",
+                status: 400,
+            });
+        }
+        const id = parseInt(aluno_id, 10);
+        
         const aluno = await prisma.aluno.findUnique({
             where: { id: id },
-        })
+        });
+        
         if(!aluno){
             return NextResponse.json({
                 message: "Aluno não encontrado",
@@ -31,6 +37,7 @@ export async function POST(request:NextApiRequest) {
             const { exercicios } = json;
             treino = {
                 exercicios,
+                id,
             }
         }
 
@@ -67,11 +74,16 @@ export async function GET(request: NextApiRequest){
 
     try{
         const aluno_id = request.query;
-
+        if (typeof aluno_id !== 'string') {
+            return NextResponse.json({
+                message: "Id de aluno inválido.",
+                status: 400,
+            });
+        }
         const aluno = await prisma.aluno.findUnique({
-            where: { id: aluno_id },
+            where: { id: parseInt(aluno_id, 10) },
         })
-        if(aluno === undefined){
+        if(!aluno){
             return NextResponse.json({
                 message: "Aluno não encontrado",
                 status: 404,
@@ -79,7 +91,7 @@ export async function GET(request: NextApiRequest){
         }
 
         const treinos = await prisma.treino.findMany({
-            where: {aluno_id : aluno_id}
+            where: {aluno_id : parseInt(aluno_id, 10)}
         })
 
         if( treinos.length === 0 ){

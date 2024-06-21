@@ -43,7 +43,7 @@ export async function PUT(request:NextApiRequest) {
         }
 
         const update = await prisma.exercicio.update({
-            where: { id: id },
+            where: { id: parseInt(id, 10) },
             data: data,
         })
 
@@ -53,11 +53,14 @@ export async function PUT(request:NextApiRequest) {
             body: update,
         })
 
-    } catch(error){
+    } catch (error) {
         return NextResponse.json({
-            message: "Erro ao atualizar exercício",
-            body: error,
-        })
+            message: "Erro ao atualizar exercício.",
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -75,7 +78,7 @@ export async function GET(request:NextApiRequest) {
         }
 
         const exercicio = await prisma.exercicio.findUnique({
-            where: { id: id },
+            where: { id: parseInt(id, 10) },
         })
 
         return NextResponse.json({
@@ -84,11 +87,14 @@ export async function GET(request:NextApiRequest) {
             body: exercicio,
         })
         
-    } catch(error) {
+    } catch (error) {
         return NextResponse.json({
             message: "Erro ao buscar exercício.",
-            body: error,
-        })
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -106,7 +112,7 @@ export async function DELETE(request:NextApiRequest) {
         }
 
         await prisma.exercicio.delete({
-            where: { id: id },
+            where: { id: parseInt(id, 10) },
         })
 
         return NextResponse.json({
@@ -115,10 +121,12 @@ export async function DELETE(request:NextApiRequest) {
         })
 
     } catch (error) {
-
         return NextResponse.json({
-            message: "Erro ao deletar exercício",
-            body: error,
-        })
+            message: "Erro ao deletar exercício.",
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }
