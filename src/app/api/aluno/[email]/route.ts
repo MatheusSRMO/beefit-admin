@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client'
-import { NextRequest, NextResponse } from 'next/server';
+import { NextApiRequest } from 'next';
+import { NextResponse } from 'next/server';
 
-const prisma = PrismaClient();
+const prisma = new PrismaClient();
 
 interface UpdateAluno {
     nome?: string;
@@ -9,10 +10,18 @@ interface UpdateAluno {
 }
 
 // Edit Aluno
-export async function PUT(request:NextRequest) {
-    const email = request.headers;
+export async function PUT(request:NextApiRequest) {
+    const email = request.query;
     try{
-        const req = await request.json();
+
+        if (typeof email !== 'string') {
+            return NextResponse.json({
+                message: "Email inválido.",
+                status: 400,
+            });
+        }
+        
+        const req = await request.body;
         
         const data: UpdateAluno = {};
         if(req) {
@@ -53,10 +62,17 @@ export async function PUT(request:NextRequest) {
 }
 
 // Find Aluno by Email
-export async function GET(request:Request) {
-    const email = request.headers;
+export async function GET(request:NextApiRequest) {
+    const email = request.query;
 
     try {
+
+        if (typeof email !== 'string') {
+            return NextResponse.json({
+                message: "Email inválido.",
+                status: 400,
+            });
+        }
 
         const aluno = await prisma.aluno.findUnique({
             where: { email: email },
@@ -77,10 +93,17 @@ export async function GET(request:Request) {
 }
 
 // Delete aluno
-export async function DELETE(request:Request) {
-    const email = request.headers;
+export async function DELETE(request:NextApiRequest) {
+    const email = request.query;
     
     try {
+
+        if (typeof email !== 'string') {
+            return NextResponse.json({
+                message: "Email inválido.",
+                status: 400,
+            });
+        }
 
         await prisma.aluno.delete({
             where: { email: email },
