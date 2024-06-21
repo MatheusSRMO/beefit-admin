@@ -23,13 +23,12 @@ model Aluno {
 
 model Treino {
   id            Int         @id @default(autoincrement())
-  exercicios    Exercicio[]
-  Alunos        Aluno[]
+  exercicios    Int[]
+  alunos        Aluno[]
 }
 
 model Exercicio {
   id            Int         @id @default(autoincrement())
   nome          String      @db.VarChar(100)
   gifLink       String      @db.VarChar(100)
-  treinos       Treino[]
 }
