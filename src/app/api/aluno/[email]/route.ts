@@ -53,11 +53,14 @@ export async function PUT(request:NextApiRequest) {
             body: update,
         })
 
-    } catch(error){
+    } catch (error) {
         return NextResponse.json({
-            message: "Erro ao criar aluno",
-            body: error,
-        })
+            message: "Erro ao editar aluno",
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -84,11 +87,14 @@ export async function GET(request:NextApiRequest) {
             body: aluno,
         })
         
-    } catch(error) {
+    } catch (error) {
         return NextResponse.json({
             message: "Erro ao buscar aluno",
-            body: error,
-        })
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
@@ -115,10 +121,12 @@ export async function DELETE(request:NextApiRequest) {
         })
 
     } catch (error) {
-
         return NextResponse.json({
             message: "Erro ao deletar aluno",
-            body: error,
-        })
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }

@@ -18,13 +18,13 @@ model Aluno {
   nome          String      @db.VarChar(100)
   senha         String      @db.VarChar(50)
   email         String      @unique @db.VarChar(100)
-  treinos       Treino[]
+  treinos       Int[]
 }
 
 model Treino {
   id            Int         @id @default(autoincrement())
   exercicios    Int[]
-  alunos        Aluno[]
+  aluno_id      Int
 }
 
 model Exercicio {

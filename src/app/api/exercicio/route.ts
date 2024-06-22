@@ -17,7 +17,7 @@ export async function POST(request:Request) {
             }
         }
 
-        if( exercicio?.nome === undefined || exercicio.gifLink === undefined ){
+        if( exercicio?.nome === undefined || exercicio?.gifLink === undefined ){
             return NextResponse.json({
                 message: "Erro ao criar exercicio devido a falta de atributos.",
                 status: 400,
@@ -36,26 +36,40 @@ export async function POST(request:Request) {
 
     } catch (error) {
         return NextResponse.json({
-            message: "Erro ao criar exercicio",
-            body: error,
-        })
+            message: "Erro ao criar exercício.",
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
 // List exercicios
 export async function GET(request: Request){
-    const exercicios = await prisma.exercicio.findMany();;
+    
+    try{
+        const exercicios = await prisma.exercicio.findMany();;
 
-    if( exercicios.length === 0 ){
+        if( exercicios.length === 0 ){
+            return NextResponse.json({
+                message: "Nenhum exercicio cadastrado no sistema.",
+                status: 404,
+            })
+        } else {
+            return NextResponse.json({
+                message: "Exercicios buscados com sucesso.",
+                status: 200,
+                body: exercicios,
+            });
+        }
+    }  catch (error) {
         return NextResponse.json({
-            message: "Nenhum exercicio cadastrado no sistema.",
-            status: 404,
-        })
-    } else {
-        return NextResponse.json({
-            message: "Exercicios buscados com sucesso.",
-            status: 200,
-            body: exercicios,
+            message: "Erro ao buscar exercícios.",
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
         });
+    } finally {
+        await prisma.$disconnect();
     }
 }

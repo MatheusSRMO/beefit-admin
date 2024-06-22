@@ -4,34 +4,29 @@ import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-interface UpdateAluno {
-    nome?: string;
-    senha?: string;
+interface UpdateTreino {
+    exercicios?: Int32Array;
 }
 
-// Edit Aluno
+// Edit Treino
 export async function PUT(request:NextApiRequest) {
-    const email = request.query;
+    const id = request.query;
     try{
 
-        if (typeof email !== 'string') {
+        if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Email inválido.",
+                message: "Id inválido.",
                 status: 400,
             });
         }
-        
+
         const req = await request.body;
         
-        const data: UpdateAluno = {};
+        const data: UpdateTreino = {};
         if(req) {
-            const {nome, senha} = req;
-            if (nome !== undefined) {
-                data.nome = nome;
-            }
-            
-            if (senha !== undefined) {
-                data.senha = senha;
+            const {exercicios} = req;
+            if (exercicios.length > 0) {
+                data.exercicios = exercicios;
             }
         }
 
@@ -42,82 +37,82 @@ export async function PUT(request:NextApiRequest) {
             })
         }
 
-        const update = await prisma.aluno.update({
-            where: { email: email },
+        const update = await prisma.treino.update({
+            where: { id: parseInt(id, 10) },
             data: data,
         })
 
         return NextResponse.json({
-            message: "Aluno atualizado com sucesso.",
+            message: "Treino atualizado com sucesso.",
             status: 200,
             body: update,
         })
 
     } catch(error){
         return NextResponse.json({
-            message: "Erro ao criar aluno",
+            message: "Erro ao editar treino",
             body: error,
         })
     }
 }
 
-// Find Aluno by Email
+// Find Treino by Id
 export async function GET(request:NextApiRequest) {
-    const email = request.query;
+    const id = request.query;
 
     try {
 
-        if (typeof email !== 'string') {
+        if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Email inválido.",
+                message: "Id inválido.",
                 status: 400,
             });
         }
 
-        const aluno = await prisma.aluno.findUnique({
-            where: { email: email },
+        const treino = await prisma.treino.findUnique({
+            where: { id: parseInt(id, 10) },
         })
 
         return NextResponse.json({
-            message: "Aluno encontrado com sucesso",
+            message: "Treino encontrado com sucesso.",
             status: 200,
-            body: aluno,
+            body: treino,
         })
         
     } catch(error) {
         return NextResponse.json({
-            message: "Erro ao buscar aluno",
+            message: "Erro ao buscar treino.",
             body: error,
         })
     }
 }
 
-// Delete aluno
+// Delete Treino
 export async function DELETE(request:NextApiRequest) {
-    const email = request.query;
+    const id = request.query;
     
     try {
 
-        if (typeof email !== 'string') {
+        if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Email inválido.",
+                message: "Id inválido.",
                 status: 400,
             });
         }
 
-        await prisma.aluno.delete({
-            where: { email: email },
+        await prisma.treino.delete({
+            where: { id: parseInt(id, 10) },
         })
 
         return NextResponse.json({
-            message: "Aluno deletado com sucesso.",
+            message: "Treino deletado com sucesso.",
             status: 200,
         })
 
     } catch (error) {
 
         return NextResponse.json({
-            message: "Erro ao deletar aluno",
+            message: "Erro ao deletar treino.",
             body: error,
         })
     }
