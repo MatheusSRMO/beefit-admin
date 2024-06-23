@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 import { NextApiRequest } from 'next';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
+
+// http://localhost:3000/api/aluno/aluno?email={email}
 
 interface UpdateAluno {
     nome?: string;
@@ -10,8 +12,9 @@ interface UpdateAluno {
 }
 
 // Edit Aluno
-export async function PUT(request:NextApiRequest) {
-    const email = request.query;
+export async function PUT(request:NextRequest) {
+    const { searchParams } = new URL(request.url);
+        const email = searchParams.get('email');
     try{
 
         if (typeof email !== 'string') {
@@ -21,8 +24,7 @@ export async function PUT(request:NextApiRequest) {
             });
         }
         
-        const req = await request.body;
-        
+        const req = await request.json();
         const data: UpdateAluno = {};
         if(req) {
             const {nome, senha} = req;
@@ -65,14 +67,15 @@ export async function PUT(request:NextApiRequest) {
 }
 
 // Find Aluno by Email
-export async function GET(request:NextApiRequest) {
-    const email = request.query;
+export async function GET(request:NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email');
 
     try {
 
         if (typeof email !== 'string') {
             return NextResponse.json({
-                message: "Email inválido.",
+                message: `Email inválido.`,
                 status: 400,
             });
         }
@@ -81,11 +84,18 @@ export async function GET(request:NextApiRequest) {
             where: { email: email },
         })
 
-        return NextResponse.json({
-            message: "Aluno encontrado com sucesso",
-            status: 200,
-            body: aluno,
-        })
+        if (aluno){
+            return NextResponse.json({
+                message: `Aluno encontrado com sucesso`,
+                status: 200,
+                body: aluno,
+            })
+        } else {
+            return NextResponse.json({
+                message: "Aluno não encontrado.",
+                status: 404,
+            })
+        }
         
     } catch (error) {
         return NextResponse.json({
@@ -99,14 +109,17 @@ export async function GET(request:NextApiRequest) {
 }
 
 // Delete aluno
-export async function DELETE(request:NextApiRequest) {
-    const email = request.query;
+export async function DELETE(request:NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email');
     
     try {
 
         if (typeof email !== 'string') {
             return NextResponse.json({
-                message: "Email inválido.",
+                email: email,
+                type: typeof(email),
+                message: `Email inválido!!. ${email}`,
                 status: 400,
             });
         }

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { NextApiRequest } from 'next';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
 
@@ -9,28 +9,34 @@ interface UpdateTreino {
 }
 
 // Edit Treino
-export async function PUT(request:NextApiRequest) {
-    const id = request.query;
+export async function PUT(request:NextRequest) {
+
     try{
 
+        const {searchParams} = new URL(request.url);
+        const id = searchParams.get('id');
         if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Id inválido.",
+                message: "Id de treino inválido.",
                 status: 400,
             });
         }
 
-        const req = await request.body;
-        
-        const data: UpdateTreino = {};
-        if(req) {
-            const {exercicios} = req;
-            if (exercicios.length > 0) {
-                data.exercicios = exercicios;
-            }
+        const treino = await prisma.treino.findUnique({
+            where: {id: parseInt(id, 10)},
+        });
+
+        if(!treino){
+            return NextResponse.json({
+                message: "Treino não encontrado.",
+                status: 404,
+            });
         }
 
-        if (Object.keys(data).length === 0) {
+        const req = await request.json();
+        const exercicios = req.exercicios;
+
+        if (exercicios.length === 0 || exercicios === undefined) {
             return NextResponse.json({
                 message: "Nenhum item a ser atualizado.",
                 status: 400,
@@ -39,7 +45,9 @@ export async function PUT(request:NextApiRequest) {
 
         const update = await prisma.treino.update({
             where: { id: parseInt(id, 10) },
-            data: data,
+            data: {
+                exercicios: exercicios,
+            }
         })
 
         return NextResponse.json({
@@ -48,23 +56,27 @@ export async function PUT(request:NextApiRequest) {
             body: update,
         })
 
-    } catch(error){
+    } catch (error) {
         return NextResponse.json({
-            message: "Erro ao editar treino",
-            body: error,
-        })
+            message: "Erro ao editar treino.",
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
 // Find Treino by Id
-export async function GET(request:NextApiRequest) {
-    const id = request.query;
+export async function GET(request:NextRequest) {
 
     try {
 
+        const {searchParams} = new URL(request.url);
+        const id = searchParams.get('id');
         if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Id inválido.",
+                message: "Id de treino inválido.",
                 status: 400,
             });
         }
@@ -73,29 +85,41 @@ export async function GET(request:NextApiRequest) {
             where: { id: parseInt(id, 10) },
         })
 
-        return NextResponse.json({
-            message: "Treino encontrado com sucesso.",
-            status: 200,
-            body: treino,
-        })
+        if(treino){
+
+            return NextResponse.json({
+                message: "Treino encontrado com sucesso.",
+                status: 200,
+                body: treino,
+            })
+        } else {
+            return NextResponse.json({
+                message: "Treino não encontrado.",
+                status: 404,
+            })
+        }
         
-    } catch(error) {
+    } catch (error) {
         return NextResponse.json({
             message: "Erro ao buscar treino.",
-            body: error,
-        })
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }
 
 // Delete Treino
-export async function DELETE(request:NextApiRequest) {
-    const id = request.query;
-    
+export async function DELETE(request:NextRequest) {
+
     try {
 
+        const {searchParams} = new URL(request.url);
+        const id = searchParams.get('id');
         if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Id inválido.",
+                message: "Id de treino inválido.",
                 status: 400,
             });
         }
@@ -110,10 +134,12 @@ export async function DELETE(request:NextApiRequest) {
         })
 
     } catch (error) {
-
         return NextResponse.json({
             message: "Erro ao deletar treino.",
-            body: error,
-        })
+            body: error instanceof Error ? error.message : String(error),
+            status: 500,
+        });
+    } finally {
+        await prisma.$disconnect();
     }
 }

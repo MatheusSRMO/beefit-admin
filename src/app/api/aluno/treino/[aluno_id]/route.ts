@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
+import { url } from 'inspector';
 import { NextApiRequest } from 'next';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
@@ -8,10 +9,11 @@ const prisma = new PrismaClient();
 // Cria treino já relacionado ao aluno
 
 // Create Treino
-export async function POST(request:NextApiRequest) {
+export async function POST(request:NextRequest) {
     
     try{
-        const aluno_id = request.query;
+        const {searchParams} = new URL(request.url);
+        const aluno_id = searchParams.get('aluno_id');
         if (typeof aluno_id !== 'string') {
             return NextResponse.json({
                 message: "Id de aluno inválido.",
@@ -31,19 +33,24 @@ export async function POST(request:NextApiRequest) {
             })
         }
         
-        const json = await request.body;
-        let treino;
-        if(json) {
-            const { exercicios } = json;
-            treino = {
-                exercicios,
-                id,
-            }
+        const json = await request.json();
+        const { exercicios } = json;
+
+        if (!exercicios || !Array.isArray(exercicios) || exercicios.length === 0) {
+            return NextResponse.json({
+                message: "Erro ao criar treino devido à falta de exercícios.",
+                status: 400,
+            });
         }
 
-        if( aluno?.exercicios.length === 0 ){
+        const treino = {
+            exercicios: exercicios,
+            aluno_id: id,
+        }
+
+        if( treino?.exercicios.length === 0 || treino === undefined ){
             return NextResponse.json({
-                message: "Erro ao criar treino devido a falta de exercicios.",
+                message: "Erro ao criar treino.",
                 status: 400,
             })
         }
@@ -70,10 +77,12 @@ export async function POST(request:NextApiRequest) {
 }
 
 // List Treinos by aluno
-export async function GET(request: NextApiRequest){
+export async function GET(request: NextRequest){
 
     try{
-        const aluno_id = request.query;
+
+        const {searchParams} = new URL(request.url);
+        const aluno_id = searchParams.get('aluno_id');
         if (typeof aluno_id !== 'string') {
             return NextResponse.json({
                 message: "Id de aluno inválido.",
@@ -106,7 +115,7 @@ export async function GET(request: NextApiRequest){
                 body: treinos,
             });
         }
-    }  catch (error) {
+    } catch (error) {
         return NextResponse.json({
             message: "Erro ao buscar treino.",
             body: error instanceof Error ? error.message : String(error),

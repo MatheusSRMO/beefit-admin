@@ -32,3 +32,9 @@ model Exercicio {
   nome          String      @db.VarChar(100)
   gifLink       String      @db.VarChar(100)
 }
+
+model Calendario {
+  id            Int         @id @default(autoincrement)
+  aluno_id      Int        
+  data          Date        @db.Date
+}
