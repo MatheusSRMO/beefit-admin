@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { NextApiRequest } from 'next';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
@@ -10,18 +9,19 @@ interface UpdateExercicio {
 }
 
 // Edit Exercicio
-export async function PUT(request:NextApiRequest) {
-    const id = request.query;
+export async function PUT(request:NextRequest) {
     try{
 
+        const {searchParams} = new URL(request.url);
+        const id = searchParams.get('id');
         if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Id de exercício inválida.",
+                message: "Id de exercicio inválido." + id,
                 status: 400,
             });
         }
-        
-        const req = await request.body;
+
+        const req = await request.json();
         
         const data: UpdateExercicio = {};
         if(req) {
@@ -65,14 +65,15 @@ export async function PUT(request:NextApiRequest) {
 }
 
 // Find Exercicio by Id
-export async function GET(request:NextApiRequest) {
-    const id = request.query;
+export async function GET(request:NextRequest) {
 
     try {
 
+        const {searchParams} = new URL(request.url);
+        const id = searchParams.get('id');
         if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Id de exercício inválida.",
+                message: "Id de exercicio inválido.",
                 status: 400,
             });
         }
@@ -81,11 +82,20 @@ export async function GET(request:NextApiRequest) {
             where: { id: parseInt(id, 10) },
         })
 
-        return NextResponse.json({
-            message: "Exercício encontrado com sucesso.",
-            status: 200,
-            body: exercicio,
-        })
+        
+        if(exercicio){
+
+            return NextResponse.json({
+                message: "Exercício encontrado com sucesso.",
+                status: 200,
+                body: exercicio,
+            })
+        } else {
+            return NextResponse.json({
+                message: "Exercício não encontrado.",
+                status: 404,
+            })
+        }
         
     } catch (error) {
         return NextResponse.json({
@@ -99,14 +109,15 @@ export async function GET(request:NextApiRequest) {
 }
 
 // Delete exercicio
-export async function DELETE(request:NextApiRequest) {
-    const id = request.query;
+export async function DELETE(request:NextRequest) {
     
     try {
 
+        const {searchParams} = new URL(request.url);
+        const id = searchParams.get('id');
         if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Id de exercício inválida.",
+                message: "Id de exercicio inválido.",
                 status: 400,
             });
         }
