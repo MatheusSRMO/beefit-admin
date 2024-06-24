@@ -16,7 +16,7 @@ export async function PUT(request:NextRequest) {
         const id = searchParams.get('id');
         if (typeof id !== 'string') {
             return NextResponse.json({
-                message: "Id de exercicio inválido." + id,
+                message: "Id de exercicio inválido.",
                 status: 400,
             });
         }
