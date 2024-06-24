@@ -34,7 +34,7 @@ model Exercicio {
 }
 
 model Calendario {
-  id            Int         @id @default(autoincrement)
+  id            Int         @id @default(autoincrement())
   aluno_id      Int        
-  data          Date        @db.Date
+  data          DateTime    @db.Timestamp(3)
 }

@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 export async function GET(request: Request){
     
     try{
-        const alunos = await prisma.aluno.findMany();;
+        const alunos = await prisma.aluno.findMany();
 
         if( alunos.length === 0 ){
             return NextResponse.json({

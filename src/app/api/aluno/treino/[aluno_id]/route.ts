@@ -1,6 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-import { url } from 'inspector';
-import { NextApiRequest } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -57,6 +55,12 @@ export async function POST(request:NextRequest) {
         
         const create = await prisma.treino.create({
             data: treino
+        })
+
+        aluno.treinos.push(create.id);
+        const updateAluno = await prisma.aluno.update({
+            where: {id: aluno.id},
+            data: aluno,
         })
 
         return NextResponse.json({
