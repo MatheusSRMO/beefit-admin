@@ -3,38 +3,40 @@ import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-// Create Alunos
-export async function POST(request: Request) {
-    try {
-        const json = await request.json();
-        const { nome, email, senha } = json;
+// Create exercicio
+export async function POST(request:Request) {
+    try{
 
-        if (!nome || !email || !senha) {
-            return NextResponse.json({
-                message: "Erro ao criar aluno devido à falta de atributos.",
-                status: 400,
-            });
+        const json = await request.json();
+        let exercicio;
+        if(json) {
+            const { nome, gifLink } = json;
+            exercicio = {
+                nome,
+                gifLink,
+            }
         }
 
-        const aluno = {
-            nome,
-            email,
-            senha,
-        };
-
-        const create = await prisma.aluno.create({
-            data: aluno,
-        });
+        if( exercicio?.nome === undefined || exercicio?.gifLink === undefined ){
+            return NextResponse.json({
+                message: "Erro ao criar exercicio devido a falta de atributos.",
+                status: 400,
+            })
+        }
+        
+        const create = await prisma.exercicio.create({
+            data: exercicio
+        })
 
         return NextResponse.json({
-            message: "Aluno criado com sucesso.",
+            message: "Exercicio criado com sucesso.",
             status: 200,
             body: create,
-        });
+        })
 
     } catch (error) {
         return NextResponse.json({
-            message: "Erro ao criar aluno",
+            message: "Erro ao criar exercício.",
             body: error instanceof Error ? error.message : String(error),
             status: 500,
         });
@@ -43,32 +45,30 @@ export async function POST(request: Request) {
     }
 }
 
-// List Alunos
+// List exercicios
 export async function GET(request: Request){
     
     try{
-        const alunos = await prisma.aluno.findMany();
+        const exercicios = await prisma.exercicio.findMany();;
 
-        if( alunos.length === 0 ){
+        if( exercicios.length === 0 ){
             return NextResponse.json({
-                message: "Nenhum aluno cadastrado no sistema.",
+                message: "Nenhum exercicio cadastrado no sistema.",
                 status: 404,
             })
         } else {
             return NextResponse.json({
-                message: "Alunos buscados com sucesso.",
+                message: "Exercicios buscados com sucesso.",
                 status: 200,
-                body: alunos,
+                body: exercicios,
             });
         }
-
-    } catch (error) {
+    }  catch (error) {
         return NextResponse.json({
-            message: "Erro ao buscar alunos",
+            message: "Erro ao buscar exercícios.",
             body: error instanceof Error ? error.message : String(error),
             status: 500,
         });
-
     } finally {
         await prisma.$disconnect();
     }

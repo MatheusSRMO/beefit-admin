@@ -18,18 +18,23 @@ model Aluno {
   nome          String      @db.VarChar(100)
   senha         String      @db.VarChar(50)
   email         String      @unique @db.VarChar(100)
-  treinos       Treino[]
+  treinos       Int[]
 }
 
 model Treino {
   id            Int         @id @default(autoincrement())
-  exercicios    Exercicio[]
-  Alunos        Aluno[]
+  exercicios    Int[]
+  aluno_id      Int
 }
 
 model Exercicio {
   id            Int         @id @default(autoincrement())
   nome          String      @db.VarChar(100)
   gifLink       String      @db.VarChar(100)
-  treinos       Treino[]
+}
+
+model Calendario {
+  id            Int         @id @default(autoincrement())
+  aluno_id      Int        
+  data          DateTime    @db.Timestamp(3)
 }
