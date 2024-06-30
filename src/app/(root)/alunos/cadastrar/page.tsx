@@ -22,11 +22,14 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Copy } from 'lucide-react';
+import { registerTrainer } from '@/actions/trainer.actions';
+import { useToast } from "@/components/ui/use-toast"
+
 
 const ddImage = "";
 
 const formSchema = z.object({
-  name: z.string().nonempty({
+  firstName: z.string().nonempty({
     message: "Nome é obrigatório.",
   }),
   lastName: z.string().nonempty({
@@ -48,16 +51,19 @@ const formSchema = z.object({
 })
 
 export default function RegisterStudentPage() {
+  const { toast } = useToast();
+
   const [open, setOpen] = React.useState(false);
   const [url, setUrl] = React.useState<string>("");
   const [username, setUsername] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
       lastName: "",
       age: 0,
       weight: 0,
@@ -68,10 +74,44 @@ export default function RegisterStudentPage() {
   })
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+
+    try {
+      const trainer: TrainerRegisterProps = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        age: values.age,
+        weight: values.weight,
+        height: values.height,
+        goal: values.goal,
+        observation: values.observation,
+        url: url
+      }
+
+      const newTrainer = await registerTrainer(trainer);
+
+      if(!newTrainer) {
+        throw new Error("Error to create new trainer");
+      }
+
+      form.reset();
+      setUrl("");
+
+      toast({
+        title: "Sucesso!",
+        description: "O aluno foi cadastrado com sucesso.",
+      });
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Erro!",
+        description: "Ocorreu um erro ao cadastrar o aluno.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -103,7 +143,7 @@ export default function RegisterStudentPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-3 gap-5">
               <FormField
                 control={form.control}
-                name="name"
+                name="firstName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='text-primary'>Primeiro Nome</FormLabel>
@@ -153,6 +193,10 @@ export default function RegisterStudentPage() {
                       <Input
                         {...field}
                         type='number'
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e.target.value));
+                        }}
                         placeholder="Digite a idade do aluno"
                         className='bg-[#1e1558] border-none text-primary placeholder:text-[#528AA5]'
                       />
@@ -175,6 +219,10 @@ export default function RegisterStudentPage() {
                       <Input
                         {...field}
                         type='number'
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e.target.value));
+                        }}
                         placeholder="Digite o peso do aluno"
                         className='bg-[#1e1558] border-none text-primary placeholder:text-[#528AA5]'
                       />
@@ -197,6 +245,10 @@ export default function RegisterStudentPage() {
                       <Input
                         {...field}
                         type='number'
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e.target.value));
+                        }}
                         placeholder="Digite a altura do aluno"
                         className='bg-[#1e1558] border-none text-primary placeholder:text-[#528AA5]'
                       />
@@ -255,9 +307,12 @@ export default function RegisterStudentPage() {
                 type="submit"
                 variant="custom"
                 className='col-span-3 w-44 mx-auto'
-                onClick={() => setOpen(prev => !prev)}
+                disabled={loading}
+              // onClick={() => setOpen(prev => !prev)}
               >
-                Adicionar
+                {
+                  loading ? 'Carregando...' : 'Cadastrar'
+                }
               </Button>
             </form>
           </Form>
