@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowBigLeft } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
-export default function layout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   return (
