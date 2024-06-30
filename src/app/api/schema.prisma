@@ -8,44 +8,44 @@ datasource db {
 }
 
 model Aluno {
-    id          Int       @id @default(autoincrement())
-    firstName   String    @db.VarChar(100)
-    lastName    String    @db.VarChar(100)
+    id          Int      @id @default(autoincrement())
+    firstName   String   @db.VarChar(100)
+    lastName    String   @db.VarChar(100)
     age         Int
     weight      Float
     height      Float
-    goal        String?   @db.VarChar(100)
-    observation String?   @db.VarChar(200)
-    url         String?   @db.VarChar(2000)
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    goal        String?  @db.VarChar(100)
+    observation String?  @db.VarChar(200)
+    url         String?  @db.VarChar(2000)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
     treinos     Treino[]
 }
 
 model Treino {
-    id            Int         @id @default(autoincrement())
-    aluno         Aluno       @relation(fields: [alunoId], references: [id])
-    alunoId       Int
-    exercicios    TreinoExercicio[]
-    finalizado    Boolean     @default(false)
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime    @updatedAt
+    id         Int               @id @default(autoincrement())
+    aluno      Aluno             @relation(fields: [alunoId], references: [id])
+    alunoId    Int
+    exercicios TreinoExercicio[]
+    finalizado Boolean           @default(false)
+    createdAt  DateTime          @default(now())
+    updatedAt  DateTime          @updatedAt
 }
 
 model Exercicio {
-    id         Int             @id @default(autoincrement())
-    nome       String          @db.VarChar(100)
-    gifLink    String          @db.VarChar(2000)
+    id         Int               @id @default(autoincrement())
+    nome       String            @db.VarChar(100)
+    gifLink    String            @db.VarChar(2000)
     repeticoes Int
     series     Int
     peso       Int
     treinos    TreinoExercicio[]
-    createdAt  DateTime        @default(now())
-    updatedAt  DateTime        @updatedAt
+    createdAt  DateTime          @default(now())
+    updatedAt  DateTime          @updatedAt
 }
 
 model TreinoExercicio {
-    treino      Treino   @relation(fields: [treinoId], references: [id])
+    treino      Treino    @relation(fields: [treinoId], references: [id])
     treinoId    Int
     exercicio   Exercicio @relation(fields: [exercicioId], references: [id])
     exercicioId Int
