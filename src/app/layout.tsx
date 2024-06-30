@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import SideBar from "@/components/SideBar";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Toaster } from "@/components/ui/toaster";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,13 +24,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br">
-      <body className={cn(inter.className, "flex flex-row h-screen bg-background")}>
-        <SideBar className="h-full w-72"/>
-        <ScrollArea className="h-full flex-1">
+    <ClerkProvider>
+      <html lang="pt-br">
+        <body className={cn(inter.className, "flex flex-row h-screen bg-background")}>
           {children}
-        </ScrollArea>
-      </body>
-    </html>
+          <Toaster />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

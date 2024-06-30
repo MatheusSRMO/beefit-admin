@@ -1,40 +1,54 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 model Aluno {
-  id            Int         @id @default(autoincrement())
-  nome          String      @db.VarChar(100)
-  senha         String      @db.VarChar(50)
-  email         String      @unique @db.VarChar(100)
-  treinos       Int[]
+    id          Int      @id @default(autoincrement())
+    firstName   String   @db.VarChar(100)
+    lastName    String   @db.VarChar(100)
+    age         Int
+    weight      Float
+    height      Float
+    goal        String?  @db.VarChar(100)
+    observation String?  @db.VarChar(200)
+    url         String?  @db.VarChar(2000)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    treinos     Treino[]
 }
 
 model Treino {
-  id            Int         @id @default(autoincrement())
-  exercicios    Int[]
-  aluno_id      Int
+    id         Int               @id @default(autoincrement())
+    aluno      Aluno             @relation(fields: [alunoId], references: [id])
+    alunoId    Int
+    exercicios TreinoExercicio[]
+    finalizado Boolean           @default(false)
+    createdAt  DateTime          @default(now())
+    updatedAt  DateTime          @updatedAt
 }
 
 model Exercicio {
-  id            Int         @id @default(autoincrement())
-  nome          String      @db.VarChar(100)
-  gifLink       String      @db.VarChar(100)
+    id         Int               @id @default(autoincrement())
+    nome       String            @db.VarChar(100)
+    gifLink    String            @db.VarChar(2000)
+    repeticoes Int
+    series     Int
+    peso       Int
+    treinos    TreinoExercicio[]
+    createdAt  DateTime          @default(now())
+    updatedAt  DateTime          @updatedAt
 }
 
-model Calendario {
-  id            Int         @id @default(autoincrement())
-  aluno_id      Int        
-  data          DateTime    @db.Timestamp(3)
+model TreinoExercicio {
+    treino      Treino    @relation(fields: [treinoId], references: [id])
+    treinoId    Int
+    exercicio   Exercicio @relation(fields: [exercicioId], references: [id])
+    exercicioId Int
+
+    @@id([treinoId, exercicioId])
 }
