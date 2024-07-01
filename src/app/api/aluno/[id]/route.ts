@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
         const aluno = await prisma.aluno.findUnique({
             where: {
-                id: aluno_clerk.publicMetadata.alunoId as number
+                id: aluno_clerk.publicMetadata.trainerId as number
             }
         })
         if( !aluno ){
