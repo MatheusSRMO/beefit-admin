@@ -1,3 +1,4 @@
+import { clerkClient } from '@clerk/nextjs/server';
 import { Prisma, PrismaClient } from '@prisma/client'
 import { NextResponse, NextRequest } from 'next/server';
 
@@ -9,17 +10,21 @@ export async function GET(request: NextRequest) {
     try {
 
         const {searchParams} = new URL(request.url);
-        const aluno_id = searchParams.get('id');
-        if (typeof aluno_id !== 'string') {
+        const aluno_id_clerk = searchParams.get('id');
+
+        if(!aluno_id_clerk ){
             return NextResponse.json({
-                message: "Id de aluno inválido.",
-                status: 400,
-            });
+                message: "Aluno não encontrado.",
+                status: 404,
+            })
         }
-        const id = parseInt(aluno_id, 10);
+
+        const aluno_clerk = await clerkClient.users.getUser(aluno_id_clerk);
 
         const aluno = await prisma.aluno.findUnique({
-            where: {id: id}
+            where: {
+                id: aluno_clerk.publicMetadata.alunoId as number
+            }
         })
         if( !aluno ){
             return NextResponse.json({
