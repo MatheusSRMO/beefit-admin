@@ -67,3 +67,8 @@ declare type CreateExerciseParams = {
     observation?: string;
     personalTrainerId: number;
 };
+
+declare type CreateTrainingParams = {
+    studentId: number;
+    exercisesIds: number[];
+};
