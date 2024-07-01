@@ -1,14 +1,15 @@
-import { PrismaClient } from '@prisma/client'
-import { NextRequest, NextResponse } from 'next/server';
+import { Prisma, PrismaClient } from '@prisma/client'
+import { NextResponse, NextRequest } from 'next/server';
 
-const prisma = new PrismaClient();
+// Get aluno
+export async function GET(request: NextRequest) {
 
-// Count Rendimentos semana (Calendário)
-export async function GET(request: NextRequest){
-    
-    try{
+    const prisma = new PrismaClient();
+
+    try {
+
         const {searchParams} = new URL(request.url);
-        const aluno_id = searchParams.get('aluno_id');
+        const aluno_id = searchParams.get('id');
         if (typeof aluno_id !== 'string') {
             return NextResponse.json({
                 message: "Id de aluno inválido.",
@@ -27,31 +28,20 @@ export async function GET(request: NextRequest){
             })
         }
 
-        const today = new Date();
-        today.setDate(today.getDate() - today.getDay());
-        today.setHours(0, 0, 0, 0);
-
-        const calendario = await prisma.calendario.findMany({
-            where: {
-                aluno_id: id,
-                data: {gte: today}
-            }
+        return NextResponse.json({
+            message: "Aluno encontrado com sucesso.",
+            status: 200,
+            body: aluno,
         })
 
+    } catch (error) { 
         return NextResponse.json({
-            message: "Finalizações buscadas com sucesso.",
-            status: 200,
-            body: calendario.length,
-        });
-
-    } catch (error) {
-        return NextResponse.json({
-            message: "Erro ao buscar finalizações",
+            message: "Erro ao buscar treinos.",
             body: error instanceof Error ? error.message : String(error),
             status: 500,
         });
-
     } finally {
         await prisma.$disconnect();
     }
+    
 }
