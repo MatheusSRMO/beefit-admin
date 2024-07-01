@@ -7,8 +7,23 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model User {
+    id        Int      @id @default(autoincrement())
+    clerkId   String   @db.VarChar(100)
+    email     String   @unique @db.VarChar(100)
+    username  String   @unique @db.VarChar(100)
+    photo     String   @db.VarChar(2000)
+    firstName String?  @db.VarChar(100)
+    lastName  String?  @db.VarChar(100)
+    role      String   @default("USER") @db.VarChar(100) // USER | TRAINER | ADMIN
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    alunos    Aluno[]
+}
+
 model Aluno {
     id          Int      @id @default(autoincrement())
+    clerkId     String   @db.VarChar(100)
     firstName   String   @db.VarChar(100)
     lastName    String   @db.VarChar(100)
     age         Int
@@ -20,6 +35,8 @@ model Aluno {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
     treinos     Treino[]
+    user        User     @relation(fields: [userId], references: [id])
+    userId      Int
 }
 
 model Treino {
