@@ -121,6 +121,7 @@ import { headers } from "next/headers";
 import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { createUser } from "@/actions/users.actions";
+import { User } from "@prisma/client";
 
 export async function POST(req: Request) {
     // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
@@ -196,13 +197,13 @@ export async function POST(req: Request) {
             role: "user",
         } as CreateUserParams;
 
-        const newUser = await createUser(user);
+        const newUser: User = await createUser(user);
 
         // Set public metadata
         if (newUser) {
             await clerkClient.users.updateUserMetadata(id, {
                 publicMetadata: {
-                    userId: newUser._id,
+                    userId: newUser.id,
                 },
             });
         }
