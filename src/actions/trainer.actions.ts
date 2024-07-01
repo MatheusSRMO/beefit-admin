@@ -6,6 +6,9 @@ import { PrismaClient } from "@prisma/client";
 export async function registerTrainer(trainer: TrainerRegisterProps) {
   const prisma = new PrismaClient();
   try {
+
+    // TODO: implement the clerk creation account logic
+
     const newTrainer = await prisma.aluno.create({
       data: {
         firstName: trainer.firstName,
@@ -15,7 +18,11 @@ export async function registerTrainer(trainer: TrainerRegisterProps) {
         height: trainer.height,
         goal: trainer.goal,
         observation: trainer.observation,
-        url: trainer.url
+        url: trainer.url,
+        clerkId: '',
+        user: {
+          
+        }
       }
     });
 
