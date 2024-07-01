@@ -1,8 +1,10 @@
 "use client";
 
+import { getExercises } from '@/actions/exercise.actions';
 import { ExerciseCard } from '@/components/custom/exercise-card';
 import Profile from '@/components/custom/profile';
 import TitleSection from '@/components/custom/title-section';
+import { Exercicio } from '@prisma/client';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -88,7 +90,30 @@ const exercises = [
 export default function MakeTrainingPage() {
   const router = useRouter();
 
+  const [exercises, setExercises] = React.useState<Exercicio[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [selectedExercises, setSelectedExercises] = React.useState<number[]>([]);
+
+  React.useEffect(() => {
+    (
+      async () => {
+        setLoading(true);
+
+        const exercises = await getExercises();
+
+        if(exercises) {
+          setExercises(exercises);
+        }
+
+        setLoading(false);
+      }
+    )();
+  }, []);
+
+
+  if (loading) return <main className="min-h-[calc(100vh_-_130px)] flex justify-center items-center">
+    <h1 className='text-primary'>Carregando...</h1>
+  </main>;
 
   return (
     <main className="min-h-[calc(100vh_-_130px)] px-10 pb-10">

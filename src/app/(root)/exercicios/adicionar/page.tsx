@@ -22,6 +22,9 @@ import TitleSection from '@/components/custom/title-section'
 import { Textarea } from '@/components/ui/textarea'
 import { useRouter } from 'next/navigation'
 import { ArrowBigLeft, ArrowBigLeftIcon } from 'lucide-react'
+import { useUser } from '@clerk/nextjs'
+import { useToast } from '@/components/ui/use-toast'
+import { createExercise } from '@/actions/exercise.actions'
 
 const formSchema = z.object({
   name: z.string().nonempty({
@@ -37,8 +40,10 @@ const formSchema = z.object({
 })
 
 export default function AddExercise() {
-  const router = useRouter()
+  const { user } = useUser();
+  const { toast } = useToast();
   const [url, setUrl] = React.useState<string>("")
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,10 +58,37 @@ export default function AddExercise() {
   })
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+
+    try {
+
+      const newExercise = await createExercise({
+        ...values,
+        personalTrainerId: user?.publicMetadata.userId! as number
+      });
+
+      if (!newExercise) {
+        throw new Error("Error to create new exercise");
+      }
+
+      form.reset();
+      setUrl("");
+
+      toast({
+        title: "Sucesso!",
+        description: "O exercício foi cadastrado com sucesso.",
+      });
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Erro!",
+        description: "Ocorreu um erro ao cadastrar o exercício.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -129,6 +161,10 @@ export default function AddExercise() {
                       <Input
                         {...field}
                         type='number'
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e.target.value));
+                        }}
                         placeholder="Digite a quantidade de séries"
                         className='bg-[#1e1558] border-none text-primary placeholder:text-[#528AA5]'
                       />
@@ -151,6 +187,10 @@ export default function AddExercise() {
                       <Input
                         {...field}
                         type='number'
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e.target.value));
+                        }}
                         placeholder="Digite a quantidade de repetições"
                         className='bg-[#1e1558] border-none text-primary placeholder:text-[#528AA5]'
                       />
@@ -173,6 +213,10 @@ export default function AddExercise() {
                       <Input
                         {...field}
                         type='number'
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e.target.value));
+                        }}
                         placeholder="Digite o peso"
                         className='bg-[#1e1558] border-none text-primary placeholder:text-[#528AA5]'
                       />
@@ -206,7 +250,11 @@ export default function AddExercise() {
                 )}
               />
 
-              <Button type="submit" variant="custom" className='col-span-3 w-44 mx-auto'>Adicioanr</Button>
+              <Button type="submit" variant="custom" disabled={loading} className='col-span-3 w-44 mx-auto'>
+                {
+                  loading ? 'Carregando...' : 'Adicionar Exercício'
+                }
+              </Button>
             </form>
           </Form>
         </div>

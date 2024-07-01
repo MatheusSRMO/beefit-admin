@@ -57,3 +57,13 @@ declare type UpdateUserParams = {
     lastName?: string;
     role?: string;
 };
+
+declare type CreateExerciseParams = {
+    name: string;
+    series: number;
+    repetitions: number;
+    weight: number;
+    url: string;
+    observation?: string;
+    personalTrainerId: number;
+};
