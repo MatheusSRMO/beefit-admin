@@ -70,13 +70,14 @@ interface updateAluno {
 }
 
 // edit Aluno
-export async function PUT(request: NextApiRequest) {
+export async function PUT(request: NextRequest) {
 
     const prisma = new PrismaClient();
 
     try {
 
-        const aluno_id = request.query;
+        const {searchParams} = new URL(request.url);
+        const aluno_id = searchParams.get('id');
         if (typeof aluno_id !== 'string') {
             return NextResponse.json({
                 message: "Id de aluno inválido.",
@@ -95,7 +96,7 @@ export async function PUT(request: NextApiRequest) {
             })
         }
 
-        const req = request.body;
+        const bodyData = await request.json();
         const {
             firstName,
             lastName,
@@ -106,10 +107,10 @@ export async function PUT(request: NextApiRequest) {
             observation,
             url,
             updatedAt, 
-        } = req;
+        } = bodyData;
 
         const updatedData: updateAluno = {};
-        if(req){
+        if(bodyData){
             if (firstName !== undefined) updatedData.firstName = firstName;
             if (lastName !== undefined) updatedData.lastName = lastName;
             if (age !== undefined) updatedData.age = age;
