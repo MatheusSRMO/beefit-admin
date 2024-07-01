@@ -51,7 +51,7 @@ export default function Profile({ url, firstName, lastName, size = 'lg' }: Profi
           'text-2xl': size === 'md',
           'text-3xl': size === 'lg',
         })}>{firstName}</h1>
-        <h2 className={clsx("flex-1 text-xl font-bold text-primary max-w-64 ml-3", {
+        <h2 className={clsx("flex-1 text-xl font-bold text-primary max-w-64", {
           'text-xl': size === 'md',
           'text-2xl': size === 'lg',
         })}>{lastName}</h2>

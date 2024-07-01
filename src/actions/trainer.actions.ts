@@ -16,7 +16,6 @@ export async function registerTrainer(trainer: TrainerRegisterProps) {
     // gera um username sendo a primeira letra do primeiro nome e o sobrenome completo
     const username = `${trainer.firstName[0]}${trainer.lastName}`.toLocaleLowerCase().replaceAll(' ', '_');
 
-    // TODO: implement the clerk creation account logic
     const clerkUser = await clerkClient.users.createUser({
       emailAddress: [`${username.replaceAll("_", ".")}@gmail.com`],
       firstName: trainer.firstName,
