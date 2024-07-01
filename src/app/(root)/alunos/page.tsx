@@ -20,7 +20,7 @@ export default function StudentPage() {
   React.useEffect(() => {
     (
       async () => {
-        if(!user) return;
+        if(!user || !user?.publicMetadata.userId) return;
 
         setLoading(true);
 

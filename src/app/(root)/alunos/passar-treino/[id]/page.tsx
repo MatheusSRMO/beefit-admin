@@ -1,10 +1,11 @@
 "use client";
 
 import { getExercises } from '@/actions/exercise.actions';
+import { getTrainerById } from '@/actions/trainer.actions';
 import { ExerciseCard } from '@/components/custom/exercise-card';
 import Profile from '@/components/custom/profile';
 import TitleSection from '@/components/custom/title-section';
-import { Exercicio } from '@prisma/client';
+import { Aluno, Exercicio } from '@prisma/client';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -87,12 +88,13 @@ const exercises = [
   },
 ]
 
-export default function MakeTrainingPage() {
+export default function MakeTrainingPage({ params }: { params: { id: string } }) {
   const router = useRouter();
 
   const [exercises, setExercises] = React.useState<Exercicio[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [selectedExercises, setSelectedExercises] = React.useState<number[]>([]);
+  const [trainer, setTrainer] = React.useState<Aluno | null>(null);
 
   React.useEffect(() => {
     (
@@ -100,9 +102,11 @@ export default function MakeTrainingPage() {
         setLoading(true);
 
         const exercises = await getExercises();
+        const trainer = await getTrainerById(Number(params.id));
 
-        if(exercises) {
+        if(exercises && trainer) {
           setExercises(exercises);
+          setTrainer(trainer);
         }
 
         setLoading(false);
@@ -121,14 +125,19 @@ export default function MakeTrainingPage() {
         <div className="flex gap-10 items-center justify-between pb-3">
           {/* <Profile url={url} firstName={"Andreza"} lastName={"Silva"} size='md' /> */}
           <div className="flex text-primary font-bold text-xl space-x-2 justify-center items-center">
-            <Image src={url}
+            <Image 
+              src={trainer?.url || ''}
               width={50}
               height={50}
               className="rounded-full border-2 border-[#528AA5]"
               alt='Imagem de perfil'
             />
-            <h1>Andreza</h1>
-            <h2>Silva</h2>
+            <h1 className='font-extrabold'>
+              {trainer?.firstName}
+            </h1>
+            <h2 className='font-medium'>
+              {trainer?.lastName}
+            </h2>
           </div>
           <TitleSection.Button
             title="Confirmar"
