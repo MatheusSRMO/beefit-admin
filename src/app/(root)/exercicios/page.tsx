@@ -4,6 +4,8 @@ import React from 'react'
 import TitleSection from '@/components/custom/title-section';
 import { useRouter } from 'next/navigation';
 import { ExerciseCard } from '@/components/custom/exercise-card';
+import { Exercicio } from '@prisma/client';
+import { getExercises } from '@/actions/exercise.actions';
 
 const exercises = [
   {
@@ -82,7 +84,30 @@ const exercises = [
 
 
 export default function ExercisePage() {
+  const [exercises, setExercises] = React.useState<Exercicio[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const router = useRouter();
+
+  React.useEffect(() => {
+    (
+      async () => {
+        setLoading(true);
+
+        const exercises = await getExercises();
+
+        if(exercises) {
+          setExercises(exercises);
+        }
+
+        setLoading(false);
+      }
+    )();
+  }, []);
+
+  if (loading) return <main className="min-h-[calc(100vh_-_130px)] flex justify-center items-center">
+    <h1 className='text-primary'>Carregando...</h1>
+  </main>;
+
   return (
     <main className="min-h-[calc(100vh_-_245px)] px-10 pb-10">
       
@@ -94,7 +119,7 @@ export default function ExercisePage() {
 
       <div className="flex flex-wrap gap-10 py-10 justify-center">
         {
-          exercises.map(exercise => (
+          exercises.map((exercise: Exercicio) => (
             <ExerciseCard key={exercise.id} {...exercise} />
           ))
         }
