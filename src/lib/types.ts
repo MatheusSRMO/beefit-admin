@@ -7,6 +7,7 @@ declare type TrainerRegisterProps = {
     goal?: string;
     observation?: string;
     url?: string;
+    personalTrainerId: number;
 };
 
 declare type Trainer = {
