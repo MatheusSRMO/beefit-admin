@@ -1,3 +1,4 @@
+import { clerkClient } from '@clerk/nextjs/server';
 import { PrismaClient } from '@prisma/client'
 import { NextResponse, NextRequest } from 'next/server';
 
@@ -8,17 +9,27 @@ export async function GET(request: NextRequest, {params}: {params : {id: string}
 
     try {
 
-        const aluno_id = params.id;
-        if (typeof aluno_id !== 'string') {
+        const aluno_id_clerk = params.id;
+        if (typeof aluno_id_clerk !== 'string') {
             return NextResponse.json({
                 message: "Id de aluno inválido.",
                 status: 400,
             });
         }
-        const id = parseInt(aluno_id, 10);
+
+        const aluno_clerk = await clerkClient.users.getUser(aluno_id_clerk);
+
+        if( !aluno_clerk ){
+            return NextResponse.json({
+                message: "Aluno não encontrado.",
+                status: 404,
+            })
+        }
 
         const aluno = await prisma.aluno.findUnique({
-            where: {id: id}
+            where: {
+                id: aluno_clerk.publicMetadata.trainerId as number
+            }
         })
         if( !aluno ){
             return NextResponse.json({
@@ -33,7 +44,7 @@ export async function GET(request: NextRequest, {params}: {params : {id: string}
 
         const treinos = await prisma.treino.findFirstOrThrow({
             where: {
-                alunoId: id,
+                alunoId: aluno.id,
                 finalizado: false,
                 createdAt: {gte: monday},
             },
@@ -82,17 +93,27 @@ export async function PUT(request: NextRequest, {params}: {params : {id: string}
 
     try {
 
-        const aluno_id = params.id;
-        if (typeof aluno_id !== 'string') {
+        const aluno_id_clerk = params.id;
+        if (typeof aluno_id_clerk !== 'string') {
             return NextResponse.json({
                 message: "Id de aluno inválido.",
                 status: 400,
             });
         }
-        const id = parseInt(aluno_id, 10);
+
+        const aluno_clerk = await clerkClient.users.getUser(aluno_id_clerk);
+
+        if( !aluno_clerk ){
+            return NextResponse.json({
+                message: "Aluno não encontrado.",
+                status: 404,
+            })
+        }
 
         const aluno = await prisma.aluno.findUnique({
-            where: {id: id}
+            where: {
+                id: aluno_clerk.publicMetadata.trainerId as number
+            }
         })
         if( !aluno ){
             return NextResponse.json({
@@ -135,7 +156,7 @@ export async function PUT(request: NextRequest, {params}: {params : {id: string}
         }
 
         const updatedAluno = await prisma.aluno.update({
-            where: { id: id },
+            where: { id: aluno.id },
             data: updatedData,
         })
 

@@ -19,6 +19,13 @@ export async function GET(request: NextRequest, {params}: {params : {id: string}
 
         const aluno_clerk = await clerkClient.users.getUser(aluno_id_clerk);
 
+        if( !aluno_clerk ){
+            return NextResponse.json({
+                message: "Aluno não encontrado.",
+                status: 404,
+            })
+        }
+
         const aluno = await prisma.aluno.findUnique({
             where: {
                 id: aluno_clerk.publicMetadata.trainerId as number
