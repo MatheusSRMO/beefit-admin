@@ -1,11 +1,31 @@
 "use server";
 
 import { handleStringfy } from "@/lib/utils";
+import { clerkClient } from "@clerk/nextjs/server";
 import { PrismaClient } from "@prisma/client";
+import { getUserById } from "./users.actions";
 
 export async function registerTrainer(trainer: TrainerRegisterProps) {
   const prisma = new PrismaClient();
   try {
+    const personalTrainer = await getUserById(trainer.personalTrainerId);
+
+    // gera uma senha aleatória
+    const password = Math.random().toString(36).slice(-8);
+
+    // gera um username sendo a primeira letra do primeiro nome e o sobrenome completo
+    const username = `${trainer.firstName[0]}${trainer.lastName}`.toLocaleLowerCase().replaceAll(' ', '_');
+
+    const clerkUser = await clerkClient.users.createUser({
+      emailAddress: [`${username.replaceAll("_", ".")}@gmail.com`],
+      firstName: trainer.firstName,
+      lastName: trainer.lastName,
+      username: username,
+      password: password,
+    });
+
+    if(!clerkUser) throw new Error("Error to create new clerk user");
+
     const newTrainer = await prisma.aluno.create({
       data: {
         firstName: trainer.firstName,
@@ -15,13 +35,27 @@ export async function registerTrainer(trainer: TrainerRegisterProps) {
         height: trainer.height,
         goal: trainer.goal,
         observation: trainer.observation,
-        url: trainer.url
-      }
+        url: trainer.url,
+        clerkId: clerkUser.id,
+        userId: personalTrainer.id
+      },
+      
     });
 
     if(!newTrainer) throw new Error("Error to create new trainer");
 
-    return handleStringfy(newTrainer);
+    await clerkClient.users.updateUserMetadata(clerkUser.id, {
+      publicMetadata: {
+        trainerId: newTrainer.id,
+        personalTrainerId: personalTrainer.id
+      },
+    });
+
+    return handleStringfy({
+      ...newTrainer,
+      username,
+      password
+    });
   } catch (error) {
     console.log(error);
   } finally {
@@ -29,10 +63,14 @@ export async function registerTrainer(trainer: TrainerRegisterProps) {
   }
 }
 
-export async function getTrainers() {
+export async function getTrainers(personalTrainerId: number) {
   const prisma = new PrismaClient();
   try {
-    const trainers = await prisma.aluno.findMany();
+    const trainers = await prisma.aluno.findMany({
+      where: {
+        userId: personalTrainerId
+      }
+    });
 
     if(!trainers) throw new Error("Error to find trainers");
 

@@ -4,11 +4,13 @@ import { deleteTrainer, getTrainers } from '@/actions/trainer.actions';
 import TitleSection from '@/components/custom/title-section'
 import TrainerCard from '@/components/custom/trainer-card';
 import { useToast } from '@/components/ui/use-toast';
+import { useUser } from '@clerk/nextjs';
 import { Aluno } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 
 export default function StudentPage() {
+  const { user } = useUser();
   const { toast } = useToast();
   const router = useRouter();
   const [trainers, setTrainers] = React.useState<Aluno[]>([]);
@@ -18,16 +20,18 @@ export default function StudentPage() {
   React.useEffect(() => {
     (
       async () => {
+        if(!user || !user?.publicMetadata.userId) return;
+
         setLoading(true);
 
-        const trainers = await getTrainers();
+        const trainers = await getTrainers(user?.publicMetadata.userId! as number);
         if (!trainers) return console.log('Erro ao buscar alunos');
 
         setTrainers(trainers);
         setLoading(false);
       }
     )();
-  }, []);
+  }, [user]);
 
   if (loading) return <main className="min-h-[calc(100vh_-_130px)] flex justify-center items-center">
     <h1 className='text-primary'>Carregando...</h1>
@@ -58,7 +62,7 @@ export default function StudentPage() {
                 variant: "destructive"
               });
 
-              const trainers = await getTrainers();
+              const trainers = await getTrainers(user?.publicMetadata.userId! as number);
               if (!trainers) return console.log('Erro ao buscar alunos');
 
               setTrainers(trainers);

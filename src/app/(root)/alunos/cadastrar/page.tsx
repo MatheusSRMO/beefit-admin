@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { Copy } from 'lucide-react';
 import { registerTrainer } from '@/actions/trainer.actions';
 import { useToast } from "@/components/ui/use-toast"
+import { useUser } from '@clerk/nextjs';
 
 
 const ddImage = "";
@@ -51,6 +52,7 @@ const formSchema = z.object({
 })
 
 export default function RegisterStudentPage() {
+  const { user } = useUser();
   const { toast } = useToast();
 
   const [open, setOpen] = React.useState(false);
@@ -86,10 +88,13 @@ export default function RegisterStudentPage() {
         height: values.height,
         goal: values.goal,
         observation: values.observation,
-        url: url
+        url: url,
+        personalTrainerId: user?.publicMetadata.userId! as number,
       }
 
       const newTrainer = await registerTrainer(trainer);
+      setUsername(newTrainer.username);
+      setPassword(newTrainer.password);
 
       if(!newTrainer) {
         throw new Error("Error to create new trainer");
@@ -102,6 +107,7 @@ export default function RegisterStudentPage() {
         title: "Sucesso!",
         description: "O aluno foi cadastrado com sucesso.",
       });
+      setOpen(true);
     } catch (error) {
       console.log(error);
       toast({
@@ -340,7 +346,9 @@ export default function RegisterStudentPage() {
                 value={username}
               />
             </div>
-            <Button type="submit" size="sm" className="px-3 bg-[#1e1558] h-9">
+            <Button type="submit" size="sm" className="px-3 bg-[#1e1558] h-9" onClick={() => {
+              navigator.clipboard.writeText(username);
+            }}>
               <span className="sr-only">Copy</span>
               <Copy className="h-4 w-4" />
             </Button>
@@ -357,7 +365,9 @@ export default function RegisterStudentPage() {
                 readOnly
               />
             </div>
-            <Button type="submit" size="sm" className="px-3 bg-[#1e1558] h-9">
+            <Button type="submit" size="sm" className="px-3 bg-[#1e1558] h-9" onClick={() => {
+              navigator.clipboard.writeText(password);
+            }}>
               <span className="sr-only">Copy</span>
               <Copy className="h-4 w-4" />
             </Button>
@@ -365,7 +375,7 @@ export default function RegisterStudentPage() {
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
               <Button type="button" variant="custom">
-                Close
+                Fechar
               </Button>
             </DialogClose>
           </DialogFooter>

@@ -6,11 +6,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import NavBar from "@/components/custom/nav-bar";
 import { Button } from "@/components/ui/button";
 import { ArrowBigLeft } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
+import { useUser } from '@clerk/nextjs';
 
-export default function layout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, isSignedIn } = useUser();
+
+  if (!isSignedIn) {
+    return redirect("/sign-in");
+  }
+
   return (
     <>
       <SideBar className="h-full w-72 z-50" labels={[
