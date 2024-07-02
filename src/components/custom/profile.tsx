@@ -35,9 +35,10 @@ export default function Profile({ url, firstName, lastName, size = 'lg' }: Profi
               <UserButton appearance={{
                 elements: {
                   avatarBox: {
-                    width: '100%',
-                    height: '100%',
-                    border: '4px solid #528AA5',
+                    width: '80%',
+                    height: '80%',
+                    border: '4px solid #4F99DD',
+                    marginTop: 10,
                   }
                 }
               }} />
@@ -47,14 +48,14 @@ export default function Profile({ url, firstName, lastName, size = 'lg' }: Profi
       }
 
       <div className="flex-1">
-        <h1 className={clsx("flex-1 font-bold text-primary max-w-32", {
-          'text-2xl': size === 'md',
-          'text-3xl': size === 'lg',
-        })}>{firstName}</h1>
-        <h2 className={clsx("flex-1 text-2xl font-bold text-primary max-w-64", {
+        <h1 className={clsx("flex-1 font-bold text-primary max-w-32 -ml-5", {
           'text-xl': size === 'md',
           'text-2xl': size === 'lg',
-        })}>{lastName}</h2>
+        })}>{firstName}</h1>
+        <h1 className={clsx("flex-1 text-2xl font-bold text-primary max-w-64 -ml-5", {
+          'text-xl': size === 'md',
+          'text-2xl': size === 'lg',
+        })}>{lastName}</h1>
       </div>
     </div >
   )
