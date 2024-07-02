@@ -1,22 +1,20 @@
 import { clerkClient } from '@clerk/nextjs/server';
-import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { NextResponse, NextRequest } from 'next/server';
 
-// Get aluno
-export async function GET(request: NextRequest) {
+// Get aluno pelo idCLerk
+export async function GET(request: NextRequest, {params}: {params : {id: string}}) {
 
     const prisma = new PrismaClient();
 
     try {
 
-        const {searchParams} = new URL(request.url);
-        const aluno_id_clerk = searchParams.get('id');
-
-        if(!aluno_id_clerk ){
+        const aluno_id_clerk = params.id;
+        if (typeof aluno_id_clerk !== 'string') {
             return NextResponse.json({
-                message: "Aluno não encontrado.",
-                status: 404,
-            })
+                message: "Id de aluno inválido.",
+                status: 400,
+            });
         }
 
         const aluno_clerk = await clerkClient.users.getUser(aluno_id_clerk);
@@ -41,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     } catch (error) { 
         return NextResponse.json({
-            message: "Erro ao buscar treinos.",
+            message: "Erro ao buscar aluno.",
             body: error instanceof Error ? error.message : String(error),
             status: 500,
         });
