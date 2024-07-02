@@ -1,15 +1,13 @@
 import { PrismaClient } from '@prisma/client'
-import { NextApiRequest } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
 
 // Get historico
-export async function GET(request:NextRequest) {
+export async function GET(request:NextRequest, {params}: {params: {id: string}}) {
     const prisma = new PrismaClient();
 
     try {
 
-        const {searchParams} = new URL(request.url);
-        const id = searchParams.get('id');
+        const id = params.id;
         if (typeof id !== 'string') {
             return NextResponse.json({
                 message: "Id de treino inválido.",

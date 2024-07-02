@@ -1,16 +1,14 @@
 import { PrismaClient } from '@prisma/client'
-import { NextApiRequest } from 'next';
 import { NextResponse, NextRequest } from 'next/server';
 
-// Get treinos por aluno
-export async function GET(request: NextRequest) {
+// Get mais velho não finalizado por aluno
+export async function GET(request: NextRequest, {params}: {params : {id: string}}) {
 
     const prisma = new PrismaClient();
 
     try {
 
-        const {searchParams} = new URL(request.url);
-        const aluno_id = searchParams.get('id');
+        const aluno_id = params.id;
         if (typeof aluno_id !== 'string') {
             return NextResponse.json({
                 message: "Id de aluno inválido.",
@@ -29,10 +27,18 @@ export async function GET(request: NextRequest) {
             })
         }
 
-        const treinos = await prisma.treino.findMany({
-            where: {alunoId: id},
+        const monday = new Date()
+        monday.setDate(monday.getDate() - monday.getDay());
+        monday.setHours(0,0,0,0);
+
+        const treinos = await prisma.treino.findFirstOrThrow({
+            where: {
+                alunoId: id,
+                finalizado: false,
+                createdAt: {gte: monday},
+            },
         })
-        if(!treinos || treinos.length === 0){
+        if(!treinos){
             return NextResponse.json({
                 message: "Treinos de aluno não encontrados.",
                 status: 404,
@@ -70,14 +76,13 @@ interface updateAluno {
 }
 
 // edit Aluno
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest, {params}: {params : {id: string}}) {
 
     const prisma = new PrismaClient();
 
     try {
 
-        const {searchParams} = new URL(request.url);
-        const aluno_id = searchParams.get('id');
+        const aluno_id = params.id;
         if (typeof aluno_id !== 'string') {
             return NextResponse.json({
                 message: "Id de aluno inválido.",

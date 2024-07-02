@@ -1,15 +1,14 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server';
 
 // Finaliza Treino
-export async function PUT(request:NextRequest) {
+export async function PUT(request:NextRequest, {params}: {params : {id: string}}) {
 
     const prisma = new PrismaClient();
 
     try {
 
-        const {searchParams} = new URL(request.url);
-        const treino_id = searchParams.get('id');
+        const treino_id = params.id;
         if (typeof treino_id !== 'string') {
             return NextResponse.json({
                 message: "Id de treino inválido.",
