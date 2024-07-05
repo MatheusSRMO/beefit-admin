@@ -58,7 +58,7 @@ export default function StudentPage() {
 
               if (!deletedTrainer) return toast({
                 title: 'Erro ao deletar aluno',
-                description: 'Tente novamente',
+                description: 'Se um aluno possui treinos, ele não pode ser deletado.',
                 variant: "destructive"
               });
 

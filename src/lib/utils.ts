@@ -26,3 +26,17 @@ export const handleError = (error: unknown) => {
     throw new Error(`Unknown error: ${JSON.stringify(error)}`);
   }
 };
+
+export const formatDateBr = (date: Date) => {
+  const data = new Date(date);
+
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0'); // Mês é baseado em zero, então adicionamos 1
+  const ano = data.getFullYear();
+
+  const horas = String(data.getHours()).padStart(2, '0');
+  const minutos = String(data.getMinutes()).padStart(2, '0');
+  const segundos = String(data.getSeconds()).padStart(2, '0');
+
+  return `${dia}/${mes}/${ano} ${horas}:${minutos}:${segundos}`;
+}

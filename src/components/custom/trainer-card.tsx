@@ -1,9 +1,8 @@
-import { Clock3Icon, RulerIcon, TargetIcon, WeightIcon } from "lucide-react";
+import { ArrowUpRightIcon, ArrowUpRightSquareIcon, Clock3Icon, RulerIcon, SquareArrowOutUpRightIcon, SquareArrowUpLeftIcon, SquareArrowUpRightIcon, TargetIcon, WeightIcon } from "lucide-react";
 import Profile from "./profile";
 import { Button } from "../ui/button";
 import { Aluno } from "@prisma/client";
 import Link from "next/link";
-import { deleteTrainer } from "@/actions/trainer.actions";
 
 
 interface TrainerCardProps extends Aluno {
@@ -12,7 +11,7 @@ interface TrainerCardProps extends Aluno {
 
 export default function TrainerCard(trainer: TrainerCardProps){
   return (
-    <div className="bg-[#1e1558] p-5 rounded-3xl flex justify-between">
+    <div className="bg-[#1e1558] p-5 rounded-3xl flex justify-between relative rounded-tr-none pr-8">
       <Profile {...trainer} size='md' />
 
       {/* faça aqui um lguar onde aparece as informações faltantes, com icones do lucide react */}
@@ -46,6 +45,14 @@ export default function TrainerCard(trainer: TrainerCardProps){
           onClick={trainer.onDelete}
         >
           Excluir
+        </Button>
+      </div>
+
+      <div className="absolute -right-2 -top-2">
+        <Button variant='link' asChild className="p-0 m-0" size='icon'>
+          <Link href={`/alunos/${trainer.id}`}>
+            <SquareArrowOutUpRightIcon className='w-5 h-5 text-primary' />
+          </Link>
         </Button>
       </div>
     </div>
