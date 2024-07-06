@@ -92,7 +92,11 @@ export async function getTrainerById(id: number) {
       include: {
         treinos: {
           include: {
-            exercicios: true
+            exercicios: {
+              include: {
+                exercicio: true
+              }
+            }
           }
         }
       }
