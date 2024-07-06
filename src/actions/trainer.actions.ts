@@ -87,7 +87,14 @@ export async function getTrainerById(id: number) {
   try {
     const trainer = await prisma.aluno.findUnique({
       where: {
-        id
+        id, 
+      },
+      include: {
+        treinos: {
+          include: {
+            exercicios: true
+          }
+        }
       }
     });
 

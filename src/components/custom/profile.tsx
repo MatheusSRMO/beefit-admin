@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { Aluno } from '@prisma/client';
 import Image from 'next/image';
 import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { AspectRatio } from '../ui/aspect-ratio';
 
 export interface ProfileProps {
   size?: 'md' | 'lg'
@@ -21,10 +22,10 @@ export default function Profile({ url, firstName, lastName, size = 'lg' }: Profi
         size === 'md' ? (
           <Image
             src={url || ''}
-            alt="Imagem"
+            alt={`${firstName[0]}`}
             width={100}
             height={100}
-            className="border-[#528AA5] border-4 rounded-full h-16 w-16"
+            className="border-[#528AA5] border-4 rounded-full h-16 w-16 text-primary"
           />
         ) : (
           <div className='w-20 h-20'>
@@ -32,22 +33,25 @@ export default function Profile({ url, firstName, lastName, size = 'lg' }: Profi
               <SignInButton />
             </SignedOut>
             <SignedIn>
-              <UserButton appearance={{
-                elements: {
-                  avatarBox: {
-                    width: '80%',
-                    height: '80%',
-                    border: '4px solid #4F99DD',
-                    marginTop: 10,
+              <AspectRatio ratio={1} className='flex justify-center items-center'>
+                <UserButton appearance={{
+                  elements: {
+                    avatarBox: {
+                      width: '70px',
+                      height: '70px',
+                      borderRadius: 'full',
+
+                      border: '4px solid #4F99DD',
+                    }
                   }
-                }
-              }} />
+                }} />
+              </AspectRatio>
             </SignedIn>
           </div>
         )
       }
 
-      <div className="flex-1">
+      <div className="flex-1 ml-5">
         <h1 className={clsx("flex-1 font-bold text-primary max-w-32 -ml-5", {
           'text-xl': size === 'md',
           'text-2xl': size === 'lg',
