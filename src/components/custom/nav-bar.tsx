@@ -4,6 +4,7 @@ import { BellDotIcon, SettingsIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import Profile from './profile';
 import { useUser } from '@clerk/nextjs';
+import Search from './search';
 
 export default function NavBar() {
   const { user } = useUser();
@@ -16,7 +17,7 @@ export default function NavBar() {
       />
 
       <div className="flex items-center gap-3">
-        <Input placeholder="O que procura?" className='border-none text-primary placeholder:text-primary bg-background w-96' />
+        <Search />
 
         <Button variant="link" size="icon">
           <BellDotIcon className="text-primary" />

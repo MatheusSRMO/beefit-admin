@@ -75,7 +75,7 @@ export default function TrainerPage({ params }: { params: { id: string } }) {
                 </h1>
               </div>
             ) : (
-              trainer.treinos.map((treino, index) => (
+              trainer.treinos.slice().reverse().map((treino, index) => (
                 <div key={index} className="h-20 mb-5 bg-[#1e1558] rounded-full flex justify-around text-primary items-center font-semibold">
                   {/* Data do treino (createdAt) */}
                   <h1>
