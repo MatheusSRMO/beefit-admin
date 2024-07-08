@@ -1,3 +1,5 @@
+import { getTrainerById } from '@/actions/trainer.actions';
+import { clerkClient } from '@clerk/nextjs/server';
 import { PrismaClient } from '@prisma/client'
 import { NextResponse, NextRequest } from 'next/server';
 
@@ -7,23 +9,30 @@ export async function GET(request:NextRequest, {params}: {params: {id: string}})
 
     try {
 
-        const id = params.id;
-        if (typeof id !== 'string') {
+        const aluno_id_clerk = params.id;
+        if (typeof aluno_id_clerk !== "string") {
             return NextResponse.json({
-                message: "Id de treino inválido.",
+                message: "Id de aluno inválido.",
                 status: 400,
             });
         }
 
-        const existingTreino = await prisma.treino.findUnique({
-            where: { id: parseInt(id, 10) },
-        })
+        const aluno_clerk = await clerkClient.users.getUser(aluno_id_clerk);
 
-        if(!existingTreino){
+        if (!aluno_clerk) {
             return NextResponse.json({
-                message: "Treino não encontrado.",
+                message: "Aluno não encontrado.",
                 status: 404,
-            })
+            });
+        }
+
+        const aluno = await getTrainerById(aluno_clerk.publicMetadata.trainerId as number);
+
+        if (!aluno) {
+            return NextResponse.json({
+                message: "Aluno não encontrado.",
+                status: 404,
+            });
         }
 
         const today = new Date();
@@ -34,10 +43,10 @@ export async function GET(request:NextRequest, {params}: {params: {id: string}})
         // de domingo a hoje
         const rendimento = await prisma.treino.count({
             where: {
-                id: parseInt(id, 10),
+                alunoId: aluno.id,
                 finalizado: true,
-                updatedAt: { gte: today },
-            }
+                updatedAt: {gte: today},
+            },
         })
 
         if(!rendimento){
