@@ -2,6 +2,7 @@
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
@@ -26,7 +27,7 @@ export default function Home() {
   const { toast } = useToast();
 
   return (
-    <main className="w-full">
+    <ScrollArea className="w-full">
 
       <section className="w-full bg-gradient-to-b from-[#192C64] to-background">
         <nav className="w-full flex justify-end max-w-screen-lg mx-auto items-center gap-5 p-5">
@@ -243,6 +244,6 @@ export default function Home() {
         </div>
       </footer>
 
-    </main>
+    </ScrollArea>
   );
 }
