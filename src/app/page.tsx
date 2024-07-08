@@ -136,7 +136,7 @@ export default function Home() {
         </div>
         <div className="w-full md:w-[576px]">
           <AspectRatio ratio={16 / 9}>
-            <Image src="/screenshot-2.png" fill alt="" />
+            <Image src="/screenshot-3.png" fill alt="" />
           </AspectRatio>
         </div>
       </div>
@@ -144,7 +144,7 @@ export default function Home() {
       <div className="flex flex-col md:flex-row w-full max-w-screen-xl mx-auto mt-44 justify-between items-start relative pr-5 px-5 gap-10">
         <div className="w-full md:w-[576px]">
           <AspectRatio ratio={16 / 9}>
-            <Image src="/screenshot-3.png" fill alt="" />
+            <Image src="/screenshot-2.png" fill alt="" />
           </AspectRatio>
         </div>
         <div className="w-full md:w-[592px] pt-5">
