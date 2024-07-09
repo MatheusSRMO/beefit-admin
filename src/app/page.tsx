@@ -216,15 +216,18 @@ export default function Home() {
           <Button
             variant="custom"
             className="text-black w-full"
-            onClick={() => {
+            /* onClick={() => {
               toast({
                 title: "Desculpe!",
                 description: "Em breve, disponível para Android e iOS",
                 variant: "destructive",
               });
-            }}
+            }} */
+           asChild
           >
-            Baixar App
+            <Link href="https://expo.dev/artifacts/eas/xxXwvHwG4VKzxJNLu3gGqk.apk">
+              Baixar App
+            </Link>
           </Button>
 
 
