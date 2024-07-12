@@ -34,3 +34,58 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Documentação API
+
+Exemplos de criação de objetos com a API.
+
+### Criar Aluno
+```
+{
+  "firstName": "Murilo",
+  "lastName": "Salvador",
+  "age": 20,
+  "weight": 70,
+  "height": 170,
+  "goal": "bulking",
+  "url": "https://linkDaFoto.com"
+}
+```
+
+### Criar Exercício
+```
+{
+  "nome": "Supino reto",
+  "gifLink": "https://LinkGifExercicio.com",
+  "series": 3,
+  "repeticoes": 12,
+  "peso": 20
+}
+```
+
+### Get Aluno
+```
+{
+  "id": 1,
+  "clerkId": 1,
+  "firstName": "Murilo",
+  "lastName": "Salvador",
+  "age": 20,
+  "weight": 70,
+  "height": 170,
+  "goal": "bulking",
+  "url": "https://linkDaFoto.com",
+  "createdAt": "09/07/2024, 13:42:02",
+  "treinos": [
+    {
+      ...infos treino
+    },
+  ],
+  "user": {
+    ... infos user
+  },
+  "userId": 2
+}
+```
+
+
